@@ -1,0 +1,240 @@
+<div id="megamenu">
+	<ul class="sf-menu megamenu_desktop visible-lg">
+		<li class="megamenu_item_1">
+			<a href="{{ settings.megamenu1_link }}">{{ settings.megamenu1_text }}{% if settings.megamenu1_badge and settings.megamenu1_badge != '' %}<span class="menu_badge"><span>{{ settings.megamenu1_badge }}</span></span>{% endif %}</a>
+		</li>
+
+		<li class="megamenu_item_2">
+			<a href="{{ settings.megamenu2_link }}">{{ settings.megamenu2_text }}{% if settings.megamenu2_badge and settings.megamenu2_badge != '' %}<span class="menu_badge"><span>{{ settings.megamenu2_badge }}</span></span>{% endif %}</a>
+			{% if settings.megamenu2_sub_toggle and settings.megamenu2_sub_toggle != '' %}
+			<ul>
+				<li>
+					<div class="submenu submenu_2">
+						<div class="row submenu_2__categories">
+							{% for i in (1..3) %}
+							    {% capture collection_iteration %}megamenu2_sub_col__{{ i }}{% endcapture %}
+							    {% capture collection_name %}{{ settings[collection_iteration] }}{% endcapture %}
+
+							    <div class="col-sm-4 column_{{ i }}">
+							        <h4><a href="{{ collections[collection_name].url }}">{{ collections[collection_name].title }}</a></h4>
+							        <ul>
+										{% for product in collections[collection_name].products limit:5 %}
+											<li><a href="{{ product.url | within: collection }}">{{ product.title | truncate:30 }}</a></li>
+										{% endfor %}
+									</ul>
+							    </div>
+							{% endfor %}
+						</div>
+
+						<div class="submenu_2__all">
+							<a href="/collections/">View all collections</a>
+						</div>
+
+						{% if settings.megamenu2_banner1_toggle or settings.megamenu2_banner2_toggle %}
+							<div class="row submenu_2__banners" id="submenu_2__banners">
+								{% if settings.megamenu2_banner1_toggle %}
+									<div class="col-sm-6 banner_1">
+										<a href="{{ settings.megamenu2_banner1_link }}">
+											{% if settings.megamenu2_banner1_img_toggle %}
+												<img src="{{ 'megamenu2_banner1_img.png' | asset_url }}" alt="" />
+											{% endif %}
+											<div>
+												<h3>{{ settings.megamenu2_banner1_text1 }}</h3>
+												<h4>{{ settings.megamenu2_banner1_text2 }}</h4>
+												<h5>{{ settings.megamenu2_banner1_text3 }}</h5>
+											</div>
+										</a>
+									</div>
+								{% endif %}
+
+								{% if settings.megamenu2_banner2_toggle %}
+									<div class="col-sm-6 banner_2">
+										<a href="{{ settings.megamenu2_banner2_link }}">
+											{% if settings.megamenu2_banner2_img_toggle %}
+												<img src="{{ 'megamenu2_banner2_img.png' | asset_url }}" alt="" />
+											{% endif %}
+											<div>
+												<h3>{{ settings.megamenu2_banner2_text1 }}</h3>
+												<h4>{{ settings.megamenu2_banner2_text2 }}</h4>
+												<h5>{{ settings.megamenu2_banner2_text3 }}</h5>
+											</div>
+										</a>
+									</div>
+								{% endif %}
+							</div>
+						{% endif %}
+					</div>
+				</li>
+			</ul>
+			{% endif %}
+		</li>
+
+		<li class="megamenu_item_3">
+			<a href="{{ blogs[settings.megamenu3_blog_select].url }}">{{ settings.megamenu3_text }}{% if settings.megamenu3_badge and settings.megamenu3_badge != '' %}<span class="menu_badge"><span>{{ settings.megamenu3_badge }}</span></span>{% endif %}</a>
+			{% if settings.megamenu3_sub_toggle and settings.megamenu3_sub_toggle != '' %}
+			<ul>
+			<li>
+				<div class="submenu submenu_3">
+				<div class="row">
+					{% for article in blogs[settings.megamenu3_blog_select].articles limit:3 %}
+					<div class="col-sm-4">
+						<p class="blog_date">{{ article.published_at | date: '%A, %B %d, %Y' }}</p>
+
+						{% if article.content contains "img" %}
+						    {% assign articleImg = article.content | split: 'img' %}
+						    {% assign articleImg = article.content | split: 'src="' %}
+						    {% assign articleImg = articleImg[1] | split: '"' | first | replace: '//cdn', 'http://cdn' | replace: 'http:http://', 'http://' | remove: 'https:' %}
+						    {% assign articleImgAlt = article.content | split: 'alt="' %}
+						    {% assign articleImgAlt = articleImgAlt[1] | split: '"' | first %}
+						    {{ articleImg | img_tag: articleImgAlt, 'blog_img' }}
+						{% endif %}
+
+						<h3 class="blog_title"><a href="{{ article.url }}">{{ article.title | truncate:25 }}</a></h3>
+
+						<p class="blog_content">
+							{{ article.content | strip_html | truncatewords: 15 }}						
+						</p>
+					</div>
+					{% endfor %}
+				</div>
+				</div>
+			</li>
+			</ul>
+			{% endif %}
+		</li>
+
+		<li class="megamenu_item_4">
+			<a href="{{ collections[settings.megamenu4_sub_collection].url }}">{{ settings.megamenu4_text }}{% if settings.megamenu4_badge and settings.megamenu4_badge != '' %}<span class="menu_badge"><span>{{ settings.megamenu4_badge }}</span></span>{% endif %}</a>
+			{% if settings.megamenu4_sub_toggle and settings.megamenu4_sub_toggle != '' %}
+			<ul>
+			<li>
+				<div class="submenu submenu_4">
+				<div class="row">
+					{% for product in collections[settings.megamenu4_sub_collection].products limit:2 %}
+						<div class="col-sm-4">
+							<div class="product_item">
+								<div class="product_img">  
+									<a href="{{ product.url | within: collection }}">
+										<img src="{{ product.featured_image.src | product_img_url: 'large' }}" alt="{{ product.featured_image.alt | escape }}" />
+									</a>
+								</div>
+
+								<div class="product_price">
+									{% if product.price_varies %}From{% endif %}
+									<span class="money">{{ product.price | money }}</span>
+									{% if product.compare_at_price and product.compare_at_price > product.price %}
+									<span class="money compare-at-price">{{ product.compare_at_price | money }}</span>
+									{% endif %}
+								</div>
+
+								<div class="product_name">
+									<a href="{{ product.url | within: collection }}">{{ product.title | truncate:50 }}</a>
+								</div>
+
+								<div class="product_desc">
+									{{ product.description | strip_html | truncatewords:12 }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+
+					<div class="col-sm-4">
+						{% if settings.megamenu4_banner1_toggle or settings.megamenu4_banner2_toggle %}
+							<div class="submenu_4__banners">
+								{% if settings.megamenu4_banner1_toggle %}
+									<div class="banner_1">
+										<a href="{{ settings.megamenu4_banner1_link }}">
+											<div>
+												<h3>{{ settings.megamenu4_banner1_text1 }}</h3>
+												<h4>{{ settings.megamenu4_banner1_text2 }}</h4>
+												<h5>{{ settings.megamenu4_banner1_text3 }}</h5>
+												<h6>{{ settings.megamenu4_banner1_text4 }}</h6>
+											</div>
+										</a>
+									</div>
+								{% endif %}
+
+								{% if settings.megamenu4_banner2_toggle %}
+									<div class="banner_2">
+										<a href="{{ settings.megamenu4_banner2_link }}">
+											{% if settings.megamenu4_banner2_img_toggle %}
+												<img src="{{ 'megamenu4_banner2_img.png' | asset_url }}" alt="" />
+											{% endif %}
+											<div>
+												<h3>{{ settings.megamenu4_banner2_text1 }}</h3>
+												<h4>{{ settings.megamenu4_banner2_text2 }}</h4>
+												<h5>{{ settings.megamenu4_banner2_text3 }}</h5>
+											</div>
+										</a>
+									</div>
+								{% endif %}
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				</div>
+			</li>
+			</ul>
+			{% endif %}
+		</li>
+
+		<li class="megamenu_item_5">
+			<a href="{{ settings.megamenu5_link }}">{{ settings.megamenu5_text }}{% if settings.megamenu5_badge and settings.megamenu5_badge != '' %}<span class="menu_badge"><span>{{ settings.megamenu5_badge }}</span></span>{% endif %}</a>
+		</li>
+
+		<li class="megamenu_item_6">
+			<a href="{{ settings.megamenu6_link }}">{{ settings.megamenu6_text }}{% if settings.megamenu6_badge and settings.megamenu6_badge != '' %}<span class="menu_badge"><span>{{ settings.megamenu6_badge }}</span></span>{% endif %}</a>
+		</li>
+	</ul>
+
+	<div class="megamenu_mobile visible-xs visible-sm hidden-lg">
+		<h2>{{ page_title }}<i></i></h2>
+		<ul class="level_1">
+			<li>
+				<a href="{{ settings.megamenu1_link }}">{{ settings.megamenu1_text }}</a>
+			</li>
+
+			<li>
+				<a href="{{ settings.megamenu2_link }}">{{ settings.megamenu2_text }}<i class="level_1_trigger"></i></a>
+				{% if settings.megamenu2_sub_toggle and settings.megamenu2_sub_toggle != '' %}
+				<ul class="level_2">
+					{% for i in (1..3) %}
+					    {% capture collection_iteration %}megamenu2_sub_col__{{ i }}{% endcapture %}
+					    {% capture collection_name %}{{ settings[collection_iteration] }}{% endcapture %}
+
+					    <li>
+					        <a href="{{ collections[collection_name].url }}">{{ collections[collection_name].title }}<i class="level_2_trigger"></i></a>
+					        <ul class="level_3">
+								{% for product in collections[collection_name].products limit:7 %}
+									<li><a href="{{ product.url | within: collection }}">{{ product.title | truncate:40 }}</a></li>
+								{% endfor %}
+							</ul>
+					    </li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+			</li>
+
+			<li>
+				<a href="{{ blogs[settings.megamenu3_blog_select].url }}">{{ settings.megamenu3_text }}</a>
+			</li>
+
+			<li>
+				<a href="{{ collections[settings.megamenu4_sub_collection].url }}">{{ settings.megamenu4_text }}</a>
+			</li>
+
+			<li>
+				<a href="{{ settings.megamenu5_link }}">{{ settings.megamenu5_text }}</a>
+			</li>
+
+			<li>
+				<a href="{{ settings.megamenu6_link }}">{{ settings.megamenu6_text }}</a>
+			</li>
+		</ul>
+	</div>
+
+	<!-- HEADER CART -->
+	<div class="header_cart">
+		<a href="/cart"><i class="fa fa-shopping-cart"></i>Cart:<span id="cart_items">{{ cart.item_count }}</span>item(s)</a>
+	</div>
+</div>

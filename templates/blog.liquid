@@ -1,0 +1,76 @@
+{% paginate blog.articles by 3 %}
+<div class="blog_listing">
+	{% if current_tags %}
+		<h1 class="page_heading">{{ blog.title | link_to: blog.url }} &raquo; {{ current_tags.first }}<a href="{{ blog.url }}.atom" target="_blank"></a></h1>
+	{% else %}
+		<h1 class="page_heading">{{ blog.title }}<a href="{{ blog.url }}.atom" target="_blank"></a></h1>
+	{% endif %}
+
+	{% for article in blog.articles %}
+  	<div class="blog_listing__article">
+		<div class="article_date">
+			<time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+				<span class="date_1">{{ article.published_at | date: '%d' }}</span>
+				<span class="date_2">{{ article.published_at | date: '%b %Y' }}</span>
+			</time>
+		</div>
+
+		<div class="article_body">
+			<div class="article_header">
+				<h3 class="article_header__title product_name">
+					<a href="{{ article.url }}">{{ article.title }}</a>
+				</h3>
+
+				<p>
+					<span class="article_header__author">{{ article.author }}</span>
+
+					{% if blog.comments_enabled? %}
+						<a class="article_comments__link" href="{{ article.url }}#comments">{{ article.comments_count }} {{ article.comments_count | pluralize: 'comment','comments' }}</a>
+					{% endif %}
+				</p>
+			</div>
+
+			<div class="article_content rte">
+			{% if article.excerpt.size > 0 %}
+				{{ article.excerpt }}
+			{% else %}
+				{% if article.content contains "img" %}
+				    {% assign articleImg = article.content | split: 'img' %}
+				    {% assign articleImg = article.content | split: 'src="' %}
+				    {% assign articleImg = articleImg[1] | split: '"' | first | replace: '//cdn', 'http://cdn' | replace: 'http:http://', 'http://' | remove: 'https:' %}
+				    {% assign articleImgAlt = article.content | split: 'alt="' %}
+				    {% assign articleImgAlt = articleImgAlt[1] | split: '"' | first %}
+				    {{ articleImg | img_tag: articleImgAlt, 'item_img' }}
+				{% endif %}
+				{{ article.content | strip_html | truncatewords: 20 }}
+			{% endif %}
+			</div>
+
+			<div class="article_footer">
+				{% if article.tags.size > 0 %}
+					<p class="blog_tags">
+						{% for tag in article.tags %}
+							<a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>
+						{% endfor %}
+					</p>
+				{% endif %}
+
+				<a class="btn" href="{{ article.url }}">Read more</a>
+			</div>
+		</div>
+
+		<div class="clearfix"></div>
+	</div>
+	{% endfor %}
+    
+	{% if paginate.pages > 1 %}
+	<div class="product_listing_controls">
+		<p class="products_count">Page {{ paginate.current_page }} of {{ paginate.pages }}</p>
+
+		<div id="pagination" class="blog_listing__pagination">
+			{{ paginate | default_pagination | replace: 'Previous', 'Newer articles' | replace: 'Next', 'Older articles' }}
+		</div>
+	</div>
+	{% endif %}
+</div>
+{% endpaginate %}
